@@ -1,45 +1,80 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SipayApi.Controllers;
-
+public class PersonValidator: AbstractValidator<Person>
+{
+    public PersonValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
+        RuleFor(x=>x.Name).MaximumLength(100);
+        RuleFor(x => x.Lastname).NotEmpty().WithMessage("Last name is required");
+        RuleFor(x=>x.Lastname).MaximumLength(100);
+        RuleFor(x=>x.Phone).NotEmpty().WithMessage("Phone is required");
+        RuleFor(x => x.AccessLevel).NotEmpty().WithMessage("Access level is required");
+        RuleFor(x => x.AccessLevel).LessThanOrEqualTo(5);
+        RuleFor(x=>x.AccessLevel).GreaterThanOrEqualTo(1);
+        RuleFor(x=>x.Salary).NotEmpty();
+        When(x => x.AccessLevel == 1, () =>
+        {
+            RuleFor(x => x.Salary).LessThanOrEqualTo(10000);
+        });
+        When(x => x.AccessLevel == 2, () =>
+        {
+            RuleFor(x => x.Salary).LessThanOrEqualTo(20000);
+        });
+        When(x => x.AccessLevel == 3, () =>
+        {
+            RuleFor(x => x.Salary).LessThanOrEqualTo(30000);
+        });
+        When(x => x.AccessLevel == 4, () =>
+        {
+            RuleFor(x => x.Salary).LessThanOrEqualTo(40000);
+        });
+        When(x => x.AccessLevel == 5, () =>
+        {
+            RuleFor(x => x.Salary).LessThanOrEqualTo(50000);
+        });
+    }
+}
 public class Person
 {
-    [DisplayName("Staff person name")]
-    [Required]
-    [StringLength(maximumLength: 100, MinimumLength = 5)]
+  //  [DisplayName("Staff person name")]
+    //[Required]
+    //[StringLength(maximumLength: 100, MinimumLength = 5)]
     public string Name { get; set; }
 
 
-    [DisplayName("Staff person lastname")]
-    [Required]
-    [StringLength(maximumLength: 100, MinimumLength = 5)]
+   // [DisplayName("Staff person lastname")]
+    //[Required]
+    //[StringLength(maximumLength: 100, MinimumLength = 5)]
     public string Lastname { get; set; }
 
 
-    [DisplayName("Staff person phone number")]
-    [Required]
-    [Phone]
+   // [DisplayName("Staff person phone number")]
+    //[Required]
+    //[Phone]
     public string Phone { get; set; }
 
 
-    [DisplayName("Staff person access level to system")]
-    [Range(minimum: 1, maximum: 5)]
-    [Required]
+  //  [DisplayName("Staff person access level to system")]
+    //[Range(minimum: 1, maximum: 5)]
+    //[Required]
     public int AccessLevel { get; set; }
 
 
 
-    [DisplayName("Staff person salary")]
-    [Required]
-    [Range(minimum: 5000, maximum: 50000)]
-    [SalaryAttribute]
+  //  [DisplayName("Staff person salary")]
+    //[Required]
+  //  [Range(minimum: 5000, maximum: 50000)]
+    //[SalaryAttribute]
     public decimal Salary { get; set; }
 }
 
 
-public class SalaryAttribute : ValidationAttribute
+/*public class SalaryAttribute : ValidationAttribute
 {
     public SalaryAttribute()
     {
@@ -71,7 +106,7 @@ public class SalaryAttribute : ValidationAttribute
         }
         return message;
     }
-}
+}*/
 
 [ApiController]
 [Route("sipy/api/[controller]")]
